@@ -1,0 +1,35 @@
+d
+    8:announce
+        41:http://bttracker.debian.org:6969/announce
+    7:comment
+        35:"Debian CD from cdimage.debian.org"
+    10:created by
+        13:mktorrent 1.1
+    13:creation date
+        i1662813552e
+    4:info
+        d
+            6:length
+                i400556032e
+            4:name
+                31:debian-11.5.0-amd64-netinst.iso
+            12:piece length
+                i262144e
+            6:pieces
+                30560:<...>
+        e
+    8:url-list
+        l
+            94:https://cdimage.debian.org/cdimage/release/11.5.0/amd64/iso-cd/debian-11.5.0-amd64-netinst.iso
+            94:https://cdimage.debian.org/cdimage/archive/11.5.0/amd64/iso-cd/debian-11.5.0-amd64-netinst.iso
+        e
+e
+
+
+<bencode> ::= <integer> | <string> | <list> | <dictionary>
+
+<integer>    ::= "i" <int> "e"
+<string>     ::= <length> ":" <bytes>
+<list>       ::= "l" <bencode>+ "e"
+<dictionary> ::= "d" (<string> <bencode>)+ "e"
+

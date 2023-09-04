@@ -1,0 +1,70 @@
+bencode datatypes:
+
+    integer:
+        i<integer encoded in base ten ASCII>e
+        - negative zero is not permitted
+        - i42e
+        - i0e
+        - i-42e
+
+    bytes:
+        <length>:<contents>
+        - zero length allowed
+        - must be non-negative
+        - does not deal with encoding (usually utf-8)
+        - 4:spam
+
+    list:
+        l<contents>e
+        - ordered
+        - li42ei0e4:spame
+            - l
+                i42e
+                i0e
+                4:spam
+              e
+
+    dictionary:
+        d<contents>e
+        - keys are byte strings
+        - keys must be lexicographically
+
+
+
+I _thought_ I wasn't able to get Enum/variant stuff working,
+which is why it's all commented out. However, maybe I was just
+writing the test wrong? Based on the documentation for bendy
+here https://docs.rs/bendy/0.3.3/bendy/serde/index.html
+it looks like this is how Enums work
+
+```
+#[derive(Serialize)]
+enum Enum {
+    Unit,
+    Newtype(i32),
+    Tuple(bool, i32),
+    Struct { a: char, b: bool },
+}
+
+repr(Enum::Unit, "4:Unit");
+repr(Enum::Newtype(-1), "d7:Newtypei-1ee");
+repr(Enum::Tuple(true, 10), "d5:Tupleli1ei10eee");
+repr(Enum::Struct { a: 'x', b: true }, "d6:Structd1:a1:x1:bi1eee");
+```
+
+So basically the enum type field is expected as the key in 
+a bencode dictionary. I'm not sure what the point of that is.
+What I want from an Enum is to be able to have a heterogeneous
+sequence deserialzied as a vec e.g.
+```
+// bencode list with an int (5) and a string (hello)
+let b = b"li5e5:helloe"
+
+enum Value {
+    Number(i64),
+    ByteString(&[u8]),
+}
+
+let v: Vec<Value> = from_bytes(b).unwrap();
+// Then I can iterate through the vec and match.
+```
